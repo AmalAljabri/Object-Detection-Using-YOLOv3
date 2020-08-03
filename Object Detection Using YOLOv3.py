@@ -5,6 +5,7 @@ import numpy as np
 import arabic_reshaper
 from bidi.algorithm import get_display
 from PIL import ImageFont, Image, ImageDraw
+
 weights_path=r"D:\Object Detection Using YOLOv3\yolov3.weights"
 config_path=r"D:\Object Detection Using YOLOv3\yolov3.cfg"
 net = cv2.dnn.readNet(config_path,weights_path)
@@ -34,8 +35,6 @@ root.resizable(0, 0)
 root.title("Object Detection Using YOLOv3")
 root.configure(background="#f0f0f0")
 
-
-
 def Upload_Image(): 
     file = asfile = askopenfile(title='Upload Image', filetypes=[('Image Files', ['.jpeg', '.jpg', '.png', '.gif', '.tiff', '.tif', '.bmp'])])
     if file is not None:  
@@ -48,11 +47,9 @@ def Upload_Image():
         layer_names = net.getLayerNames()
         output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
         output_layers = net.forward(output_layers)
-
         class_ids = []
         confidences = []
         boxes = []
-
         for out in output_layers:
             for detection in out:
                 scores = detection[5:]
@@ -68,10 +65,7 @@ def Upload_Image():
                     class_ids.append(class_id)
                     confidences.append(float(confidence))
                     boxes.append([x, y, w, h])
-
-
         indices = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
-
         for i in indices:
             i = i[0]
             box = boxes[i]
@@ -79,7 +73,6 @@ def Upload_Image():
             y = box[1]
             w = box[2]
             h = box[3]
-
             text = str(classes[class_ids[i]][1])
             font = ImageFont.truetype("font.ttf", 35)
             reshaped_text = arabic_reshaper.reshape(text)   
@@ -125,10 +118,8 @@ def Camera():
                         y = center_y - h / 2
                         class_ids.append(class_id)
                         confidences.append(float(confidence))
-                        boxes.append([x, y, w, h])
-                    
+                        boxes.append([x, y, w, h]) 
             indices = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
-     
             for i in indices:
                 i = i[0]
                 box = boxes[i]
@@ -136,7 +127,6 @@ def Camera():
                 y = box[1]
                 w = box[2]
                 h = box[3]
-
                 text = str(classes[class_ids[i]][1])
                 font = ImageFont.truetype("font.ttf", 35)
                 reshaped_text = arabic_reshaper.reshape(text)   
@@ -151,7 +141,6 @@ def Camera():
             cv2.imshow("Object Detection Using YOLOv3", frame)
             if key == 27:
                 break
-
         cv2.destroyAllWindows()
         camera.release()
         
@@ -190,4 +179,3 @@ Button2.configure(anchor='center')
 Button2.configure(text='''كاميرا''')
 
 root.mainloop()
-
